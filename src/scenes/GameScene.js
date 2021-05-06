@@ -19,6 +19,9 @@ export default class GameScene extends Phaser.Scene
 		this.scoreLabel = undefined
 		this.stars = undefined
 		this.bombSpawner = undefined
+
+
+		this.gameOver = false
 	}
 
 	preload()
@@ -50,6 +53,7 @@ export default class GameScene extends Phaser.Scene
         this.physics.add.collider(this.player, platforms)
 		this.physics.add.collider(this.stars, platforms)
 		this.physics.add.collider(bombsGroup, platforms)
+		this.physics.add.collider(this.player, bombsGroup, this.hitBomb, null, this)
 
 		this.physics.add.overlap(this.player, this.stars, this.collectStar, null, this)
 
@@ -77,6 +81,13 @@ export default class GameScene extends Phaser.Scene
 
     update()
 	{
+
+		if (this.gameOver)
+		{
+			return
+		}
+
+
 		if (this.cursors.left.isDown)
 		{
 			this.player.setVelocityX(-160)
@@ -170,5 +181,16 @@ export default class GameScene extends Phaser.Scene
 		this.add.existing(label)
 
 		return label
+	}
+
+	hitBomb(player, bomb)
+	{
+		this.physics.pause()
+
+		player.setTint(0xff0000)
+
+		player.anims.play('turn')
+
+		this.gameOver = true
 	}
 }
